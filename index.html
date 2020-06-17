@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracker Demo</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="app">
+    <nav class="main-nav">
+      <ul>
+        <li id="menu-tracker" class="main-nav__link">Tracker</li>
+        <li id="menu-reports" class="main-nav__link">Reports</li>
+        <li id="menu-projects" class="main-nav__link">Projects</li>
+      </ul>
+    </nav>
+    <main>
+      <div class="tracker">
+        <input id="tracker-input" class="tracker__input" placeholder="Task note" autocomplete="off" type="text">
+        <div id="tracker-project-dropdown" class="tracker__dropdown">
+          <span id="tracker-project-label">+ Project</span>
+        </div>
+        <div id="tracker-timer" class="tracker__timer">00:00:00</div>
+        <button id="tracker-button" class="button button--start">Start</button>
+      </div>
+      <div id="tracker-display"></div>
+    </main>
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>

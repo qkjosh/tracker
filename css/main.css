@@ -1,0 +1,144 @@
+html {
+  box-sizing: border-box;
+  height: 100%;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+body {
+  margin: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+}
+ul {
+  list-style: none;
+}
+input {
+  border: 1px solid #D8D8D8;
+  min-width: 0;
+}
+.app {
+  display: flex;
+  flex: 1 1 100%;
+}
+@media screen and (max-width: 800px) {
+  .app {
+    flex-direction: column;
+  }
+}
+.main-nav {
+  padding: 1em;
+  transition: translate 0.25s;
+}
+@media screen and (min-width: 801px) {
+  .main-nav {
+    min-width: 300px;
+    border-right: 2px solid #D8D8D8;
+  }
+}
+@media screen and (max-width: 800px) {
+  .main-nav {
+    min-height: 80px;
+    border-bottom: 2px solid #D8D8D8;
+  }
+}
+.main-nav__link {
+  margin: 1em 0;
+  cursor: pointer;
+}
+main {
+  width: 100%;
+  padding: 1em;
+  background: #F5F5F5;
+  flex-grow: 1;
+}
+.tracker {
+  display: flex;
+  align-items: center;
+  background: #FFF;
+    padding: 0.5em;
+    border: 1px solid #D8D8D8;
+}
+.tracker__input {
+  flex: 1 1 100%;
+  padding: 1em 0.5em;
+}
+.tracker__dropdown {
+  cursor: pointer;
+  white-space: nowrap;
+  margin: 0 1em;
+}
+.tracker__timer {
+  margin: 0 1em;
+}
+.button {
+  cursor: pointer;
+  padding: 1em 2em;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: #5E5E5E;
+  color: #FFF;
+  border: none;
+  border-radius: 2px;
+}
+.button:hover, .button:active {
+  background: #757575;
+}
+.button--start {
+  background: #2B9284;
+}
+.button--start:hover, .button--start:active {
+  background: #38B3A2;
+}
+.button--stop {
+  background: #922b2b;
+}
+.button--stop:hover, .button--stop:active {
+  background: #B33838;
+}
+.day-entry {
+  margin: 2em 0;
+  border: 1px solid #D8D8D8;
+  background: #FFF;
+}
+.day-entry__header {
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #D8D8D8;
+  background: #ebf4ff;
+  color: #3F6EA9;
+  font-weight: 700;
+}
+.time-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1em;
+  border-bottom: 1px solid #D8D8D8;
+}
+@media screen and (max-width: 800px) {
+  .time-entry {
+    flex-direction: column;
+    align-items: start;
+  }
+}
+.time-entry > div {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+@media screen and (max-width: 800px) {
+  .time-entry > div {
+    margin: 0.5em 0;
+  }
+}
+.time-entry__note {
+  min-width: 100px;
+}
+.time-entry__project {
+  min-width: 100px;
+}
