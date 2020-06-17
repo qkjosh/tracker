@@ -18,8 +18,11 @@
     <main>
       <div class="tracker">
         <input id="tracker-input" class="tracker__input" placeholder="Task note" autocomplete="off" type="text">
-        <div id="tracker-project-dropdown" class="tracker__dropdown">
+        <div id="tracker-project-dropdown" class="tracker__dropdown tooltip-parent">
           <span id="tracker-project-label">+ Project</span>
+          <div class="tooltip">
+            <ul id="tracker-project-list"></ul>
+          </div>
         </div>
         <div id="tracker-timer" class="tracker__timer">00:00:00</div>
         <button id="tracker-button" class="button button--start">Start</button>

@@ -14,6 +14,8 @@ body {
 }
 ul {
   list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 input {
   border: 1px solid #D8D8D8;
@@ -23,7 +25,7 @@ input {
   display: flex;
   flex: 1 1 100%;
 }
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 960px) {
   .app {
     flex-direction: column;
   }
@@ -32,13 +34,13 @@ input {
   padding: 1em;
   transition: translate 0.25s;
 }
-@media screen and (min-width: 801px) {
+@media screen and (min-width: 961px) {
   .main-nav {
     min-width: 300px;
     border-right: 2px solid #D8D8D8;
   }
 }
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 960px) {
   .main-nav {
     min-height: 80px;
     border-bottom: 2px solid #D8D8D8;
@@ -72,6 +74,51 @@ main {
 }
 .tracker__timer {
   margin: 0 1em;
+}
+.tooltip {
+  cursor: default;
+  display: none;
+  border: 1px solid #D8D8D8;
+  border-top: none;
+  background: #FFF;
+  padding: 1em;
+  position: absolute;
+  top: calc(2.5em - 1px);
+  min-width: 200px;
+  box-shadow: 0px 4px 4px 0px rgba(0,0,0,0.15);
+}
+.tooltip::before {
+  content: '';
+  position: absolute;
+  height: 2em;
+  top: -2em;
+  left: 0;
+  right: 0;
+}
+.tooltip-parent {
+  position: relative;
+}
+.tooltip-parent:hover .tooltip, .tooltip:hover {
+  display: block;
+}
+.project-link {
+  cursor: pointer;
+  display: flex;
+}
+.project-link + .project-link {
+  margin-top: 1em;
+}
+.project-link:hover {
+  text-decoration: underline;
+}
+.project-link::before {
+  content: '';
+  height: 1em;
+  width: 1em;
+  display: inline-block;
+  margin-right: 0.5em;
+  border-radius: 2px;
+  background-color: currentColor;
 }
 .button {
   cursor: pointer;
@@ -119,7 +166,7 @@ main {
   padding: 1em;
   border-bottom: 1px solid #D8D8D8;
 }
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 960px) {
   .time-entry {
     flex-direction: column;
     align-items: start;
@@ -130,15 +177,13 @@ main {
   white-space: nowrap;
   overflow: hidden;
   max-width: 100%;
+  flex-grow: 1;
 }
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 960px) {
   .time-entry > div {
     margin: 0.5em 0;
   }
 }
-.time-entry__note {
-  min-width: 100px;
-}
-.time-entry__project {
-  min-width: 100px;
+.time-entry__note, .time-entry__project {
+  min-width: 200px;
 }

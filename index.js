@@ -23,9 +23,14 @@ const tracker = {
 
 const projects = {
   0: {
-    name: 'Test Project #1',
+    name: 'Test Project',
     duration: 120000,
     color: '#1E48A5'
+  },
+  1: {
+    name: 'Front-End Demo',
+    duration: 0,
+    color: '#DC6600'
   }
 }
 
@@ -44,6 +49,7 @@ const ui = {
     input: document.getElementById('tracker-input'),
     projectDropdown: document.getElementById('tracker-project-dropdown'),
     projectLabel: document.getElementById('tracker-project-label'),
+    projectList: document.getElementById('tracker-project-list'),
     timer: document.getElementById('tracker-timer'),
     button: document.getElementById('tracker-button'),
     display: document.getElementById('tracker-display')
@@ -60,6 +66,7 @@ ui.tracker.button.addEventListener('click', () => {
     ui.tracker.button.textContent = 'Start';
     ui.tracker.button.classList.remove('button--stop');
     ui.tracker.button.classList.add('button--start');
+    ui.tracker.input.value = '';
     stopTracking();
   } else {
     ui.tracker.button.textContent = 'Stop';
@@ -73,7 +80,7 @@ ui.tracker.button.addEventListener('click', () => {
 function createTimeEntry() {
   const newEntry = {
     id: tracker.timeEntriesAutoNumber,
-    projectId: 0, // TEMP
+    projectId: ui.tracker.projectDropdown.dataset.id || null,
     note: ui.tracker.input.value,
     interval: {
       duration: null,
@@ -111,14 +118,19 @@ function stopTracking(timeEntryId) {
   addTimeEntryDisplay(currentEntry);
 }
 
-
 // Tracker Display
 function buildTrackerDisplay() {
-  const fragment = new DocumentFragment();
-  for (const [key, value] of Object.entries(tracker.dayEntries)) {
-    fragment.appendChild(createDayEntryElement(key, value));
+  const projectFragment = new DocumentFragment();
+  for (const [key, value] of Object.entries(projects)) {
+    projectFragment.appendChild(createProjectListElement(key, value));
   }
-  ui.tracker.display.appendChild(fragment);
+  ui.tracker.projectList.appendChild(projectFragment);
+
+  const trackerFragment = new DocumentFragment();
+  for (const [key, value] of Object.entries(tracker.dayEntries)) {
+    trackerFragment.appendChild(createDayEntryElement(key, value));
+  }
+  ui.tracker.display.appendChild(trackerFragment);
 }
 
 function addTimeEntryDisplay(timeEntry) {
@@ -132,11 +144,30 @@ function addTimeEntryDisplay(timeEntry) {
     const dayEntryTimer = dayEntry.querySelector('.day-entry__timer');
     const dayEntryTimeEntries =  dayEntry.querySelector('.day-entry__entries');
 
+    // TODO: Consider rounding durations to the nearest second to
+    // avoid the situation where you add 1300ms + 1700ms and get 3000ms
+    // as each time entry will show 1 second but the total will be 3 seconds
+
     // Update the total time for the day
     tracker.dayEntries[dateKey] += timeEntry.interval.duration;
     dayEntryTimer.textContent = `Total: ${formatTimeTimer(tracker.dayEntries[dateKey])}`;
     dayEntryTimeEntries.appendChild(createTimeEntryElement(timeEntry));
   }
+}
+
+function createProjectListElement(projectId, data) {
+  const project = document.createElement('li');
+  project.dataset.id = projectId;
+  project.textContent = data.name;
+  project.style.color = data.color;
+  project.classList.add('project-link');
+  project.addEventListener('click', () => {
+    ui.tracker.projectDropdown.dataset.id = projectId;
+    ui.tracker.projectLabel.textContent = data.name;
+    ui.tracker.projectLabel.style.color = data.color;
+    ui.tracker.projectLabel.classList.add('project-link');
+  });
+  return project;
 }
 
 function createDayEntryElement(dateKey, duration) {
@@ -189,8 +220,10 @@ function createTimeEntryElement(timeEntry) {
   note.textContent = timeEntry.note;
   note.classList.add('time-entry__note');
   project.textContent = getProjectName(timeEntry.projectId);
-  project.classList.add('time-entry__project');
+  project.classList.add('time-entry__project', 'project-link');
+  project.style.color = getProjectColor(timeEntry.projectId);
   timer.textContent = formatTimeTimer(timeEntry.interval.duration);
+  timer.classList.add('tracker__timer');
   button.textContent = '▶';
   button.classList.add('button', 'button--start');
 
@@ -234,7 +267,17 @@ function findTimeEntry(timeEntryId) {
 }
 
 function getProjectName(projectId) {
+  if (projectId == null)
+    return 'No Project';
+
   return projects[projectId].name;
+}
+
+function getProjectColor(projectId) {
+  if (projectId == null)
+    return '#000000';
+
+  return projects[projectId].color;
 }
 
 function isSameDate(dateA, dateB) {
