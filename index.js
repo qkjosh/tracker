@@ -1,8 +1,5 @@
 // Data
 const tracker = {
-  dayEntries: {
-    '2020-06-15': 120000
-  },
   state: {
     isTracking: false,
     currentlyTracking: 0
@@ -16,10 +13,34 @@ const tracker = {
         start: '2020-06-15T23:38:00.000Z',
         end: '2020-06-15T23:40:00.000Z',
       }
+    },
+    {
+      id: 1,
+      projectId: 1,
+      note: 'Sample note',
+      interval: {
+        duration: 90000,
+        start: '2020-06-15T22:38:00.000Z',
+        end: '2020-06-15T22:39:30.000Z',
+      }
     }
   ],
-  timeEntriesAutoNumber: 1
+  timeEntriesAutoNumber: 2
 }
+
+// Initialize the tracker's dayEntries property based on the local client time
+tracker.dayEntries = tracker.timeEntries.reduce((dayEntries, currentEntry) => {
+  let dateKey = getLocalDateKey(currentEntry.interval.start);
+  if (dayEntries[dateKey] == null)
+    dayEntries[dateKey] = 0;
+
+  // NOTE: Strictly speaking, we should allocate the duration
+  // to multiple days if an interval crosses over midnight
+  // For the sake of simplicity, we will only allocate
+  // to the day a time entry is started
+  dayEntries[dateKey] += currentEntry.interval.duration;
+  return dayEntries;
+}, {});
 
 const projects = {
   0: {
@@ -35,8 +56,7 @@ const projects = {
 }
 
 const site = {
-  name: 'Tracker Demo',
-  gmt: 'GMT-0500'
+  name: 'Tracker Demo'
 }
 
 const ui = {
@@ -113,6 +133,8 @@ function stopTracking(timeEntryId) {
   let currentEntry = findTimeEntry(timeEntryId);
   currentEntry.interval.end = new Date().toISOString();
   currentEntry.interval.duration = new Date(currentEntry.interval.end) - new Date(currentEntry.interval.start);
+  currentEntry.projectId = ui.tracker.projectDropdown.dataset.id || null;
+  currentEntry.note = ui.tracker.input.value;
 
   stopTrackerUpdateLoop();
   addTimeEntryDisplay(currentEntry);
@@ -120,12 +142,14 @@ function stopTracking(timeEntryId) {
 
 // Tracker Display
 function buildTrackerDisplay() {
+  // Build the list of projects available in the tooltip
   const projectFragment = new DocumentFragment();
   for (const [key, value] of Object.entries(projects)) {
     projectFragment.appendChild(createProjectListElement(key, value));
   }
   ui.tracker.projectList.appendChild(projectFragment);
 
+  // Build all the parent day groups and child time entries
   const trackerFragment = new DocumentFragment();
   for (const [key, value] of Object.entries(tracker.dayEntries)) {
     trackerFragment.appendChild(createDayEntryElement(key, value));
@@ -134,7 +158,7 @@ function buildTrackerDisplay() {
 }
 
 function addTimeEntryDisplay(timeEntry) {
-  const dateKey = new Date(timeEntry.interval.start).toLocaleDateString('en-ca');
+  const dateKey = getLocalDateKey(timeEntry.interval.start);
   if (tracker.dayEntries[dateKey] == null) {
     // Create a new Day Entry block
     tracker.dayEntries[dateKey] = timeEntry.interval.duration;
@@ -171,9 +195,6 @@ function createProjectListElement(projectId, data) {
 }
 
 function createDayEntryElement(dateKey, duration) {
-  // Assume that dayEntries are stored using the date after applying the GMT offset
-  let date = new Date(`${dateKey} ${site.gmt}`);
-      
   // A templating engine would make this easier
   const block = document.createElement('div');
   const header = document.createElement('div');
@@ -195,11 +216,8 @@ function createDayEntryElement(dateKey, duration) {
   block.appendChild(header);
 
   tracker.timeEntries.filter(entry => {
-    // Since we're not using a time parsing library,
-    // to simplify we'll assume that the site's gmt
-    // offset is the same as the local client
-    let entryDate = new Date(entry.interval.start);
-    return isSameDate(entryDate, date);
+    // Compare the day entry and time entry ISO dates
+    return isSameDate(parseDateKey(dateKey), new Date(entry.interval.start));
   }).forEach(timeEntry => {
     // TODO: Group time entries based on identical notes
     entries.appendChild(createTimeEntryElement(timeEntry));
@@ -216,6 +234,7 @@ function createTimeEntryElement(timeEntry) {
   const timer = document.createElement('div');
   const button = document.createElement('button');
 
+  row.dataset.id = timeEntry.id;
   row.classList.add('time-entry');
   note.textContent = timeEntry.note;
   note.classList.add('time-entry__note');
@@ -284,6 +303,17 @@ function isSameDate(dateA, dateB) {
   return dateA.getFullYear() === dateB.getFullYear() &&
   dateA.getMonth() === dateB.getMonth() &&
   dateA.getDate() === dateB.getDate();
+}
+
+// Returns a date in local time with the yyyy-mm-dd format based on an ISO string
+function getLocalDateKey(ISOString) {
+  return new Date(ISOString).toLocaleDateString('en-ca');
+}
+
+// Returns a Date object based on a localized date string of the format yyyy-mm-dd
+function parseDateKey(dateKey) {
+  let unadjustedDate = new Date(dateKey);
+  return new Date(unadjustedDate.getTime() + (unadjustedDate.getTimezoneOffset() * 60 * 1000));
 }
 
 // Formatting
