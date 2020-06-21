@@ -43,6 +43,11 @@ tracker.dayEntries = tracker.timeEntries.reduce((dayEntries, currentEntry) => {
 }, {});
 
 const projects = {
+  'NONE': {
+    name: 'No Project',
+    duration: 0,
+    color: '#000000'
+  },
   0: {
     name: 'Test Project',
     duration: 120000,
@@ -50,7 +55,7 @@ const projects = {
   },
   1: {
     name: 'Front-End Demo',
-    duration: 0,
+    duration: 90000,
     color: '#DC6600'
   }
 }
@@ -138,6 +143,9 @@ function stopTracking(timeEntryId) {
 
   stopTrackerUpdateLoop();
   addTimeEntryDisplay(currentEntry);
+
+  let project = projects[currentEntry.projectId] || projects['NONE'];
+  setProjectDuration(project, project.duration + currentEntry.interval.duration);
 }
 
 // Tracker Display
@@ -297,6 +305,14 @@ function getProjectColor(projectId) {
     return '#000000';
 
   return projects[projectId].color;
+}
+
+function setProjectDuration(project, duration) {
+  // TODO: Some error handling would be nice,
+  // in case we access a non-existent project
+
+  project.duration = duration;
+  updatePieChart();
 }
 
 function isSameDate(dateA, dateB) {
