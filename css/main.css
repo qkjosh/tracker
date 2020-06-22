@@ -196,3 +196,15 @@ main {
 g:hover .pie-text {
   display: block;
 }
+#reports-display {
+  border: 1px solid #D8D8D8;
+  background: #FFF;
+  display: flex;
+  flex-wrap: wrap;
+}
+#reports-display > .chart-wrapper {
+  padding: 2em;
+}
+.chart-wrapper + .chart-wrapper {
+  border-left: 1px solid #D8D8D8;
+}

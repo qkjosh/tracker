@@ -23,9 +23,19 @@ const tracker = {
         start: '2020-06-15T22:38:00.000Z',
         end: '2020-06-15T22:39:30.000Z',
       }
+    },
+    {
+      id: 2,
+      projectId: 1,
+      note: 'Generic note',
+      interval: {
+        duration: 90000,
+        start: '2020-06-17T22:38:00.000Z',
+        end: '2020-06-17T22:39:30.000Z',
+      }
     }
   ],
-  timeEntriesAutoNumber: 2
+  timeEntriesAutoNumber: 3
 }
 
 // Initialize the tracker's dayEntries property based on the local client time
@@ -312,7 +322,7 @@ function setProjectDuration(project, duration) {
   // in case we access a non-existent project
 
   project.duration = duration;
-  updatePieChart();
+  pieChart.update();
 }
 
 function isSameDate(dateA, dateB) {
