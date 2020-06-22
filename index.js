@@ -98,31 +98,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ui.tracker.button.addEventListener('click', () => {
   if (tracker.state.isTracking === true) {
-    ui.tracker.button.textContent = 'Start';
-    ui.tracker.button.classList.remove('button--stop');
-    ui.tracker.button.classList.add('button--start');
-    ui.tracker.input.value = '';
     stopTracking();
   } else {
-    ui.tracker.button.textContent = 'Stop';
-    ui.tracker.button.classList.remove('button--start');
-    ui.tracker.button.classList.add('button--stop');
     createTimeEntry();
   }
 });
 
 // Core Methods
-function createTimeEntry() {
+function createTimeEntry(projectId, note) {
+  ui.tracker.button.textContent = 'Stop';
+  ui.tracker.button.classList.remove('button--start');
+  ui.tracker.button.classList.add('button--stop');
+
   const newEntry = {
     id: tracker.timeEntriesAutoNumber,
-    projectId: ui.tracker.projectDropdown.dataset.id || null,
-    note: ui.tracker.input.value,
+    projectId: projectId != null ? projectId : ui.tracker.projectDropdown.dataset.id || null,
+    note: note || ui.tracker.input.value,
     interval: {
       duration: null,
       start: new Date().toISOString(),
       end: null
     }
   };
+
+  // TODO: Move duplicate code to a shared function
+  if (projectId != null) {
+    let project = projects[newEntry.projectId] || projects['NONE'];
+    ui.tracker.projectDropdown.dataset.id = projectId;
+    ui.tracker.projectLabel.textContent = project.name;
+    ui.tracker.projectLabel.style.color = project.color;
+    ui.tracker.projectLabel.classList.add('project-link');
+  }
+
+  if (note != null) {
+    ui.tracker.input.value = note;
+  }
 
   // Create and track new time entry
   tracker.timeEntries.push(newEntry);
@@ -150,6 +160,18 @@ function stopTracking(timeEntryId) {
   currentEntry.interval.duration = new Date(currentEntry.interval.end) - new Date(currentEntry.interval.start);
   currentEntry.projectId = ui.tracker.projectDropdown.dataset.id || null;
   currentEntry.note = ui.tracker.input.value;
+
+  ui.tracker.button.textContent = 'Start';
+  ui.tracker.button.classList.remove('button--stop');
+  ui.tracker.button.classList.add('button--start');
+  ui.tracker.input.value = '';
+
+  let activeTimeEntryButton = document.querySelector('.time-entry .button--stop');
+  if (activeTimeEntryButton) {
+    activeTimeEntryButton.classList.remove('button--stop');
+    activeTimeEntryButton.classList.add('button--start');
+    activeTimeEntryButton.textContent = '▶';
+  }
 
   stopTrackerUpdateLoop();
   addTimeEntryDisplay(currentEntry);
@@ -263,6 +285,19 @@ function createTimeEntryElement(timeEntry) {
   timer.classList.add('tracker__timer');
   button.textContent = '▶';
   button.classList.add('button', 'button--start');
+  button.addEventListener('click', () => {
+    if (tracker.state.isTracking === true) {
+      button.textContent = '▶';
+      button.classList.remove('button--stop');
+      button.classList.add('button--start');
+      stopTracking();
+    } else {
+      button.textContent = '■';
+      button.classList.remove('button--start');
+      button.classList.add('button--stop');
+      createTimeEntry(timeEntry.projectId, timeEntry.note);
+    }
+  });
 
   row.appendChild(note);
   row.appendChild(project);

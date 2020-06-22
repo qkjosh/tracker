@@ -82,7 +82,7 @@ const barChart = (function () {
     .tickFormat(d => formatTimeTimer(d));
 
   let xAxis = d3.axisBottom(x)
-    // .tickSize(0)
+    .tickSize(0)
     .tickPadding(10)
     .ticks(d3.timeDay)
     .tickFormat(d3.timeFormat('%a, %b %d'));
